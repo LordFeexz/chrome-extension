@@ -5,6 +5,7 @@ const port = process.env.PORT || 3000;
 
 MongoConnect()
   .then(() => {
+    console.log("success connect to db");
     app.listen(port, () =>
       console.log(`example app listening on port ${port}`)
     );

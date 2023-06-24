@@ -8,6 +8,8 @@ import compression from "compression";
 import helmet from "helmet";
 import morgan from "morgan";
 import moment from "moment";
+import routes from "./routes";
+import ErrorHandler from "./middlewares/errorHandler";
 
 class App {
   public app: Application;
@@ -15,6 +17,8 @@ class App {
   constructor() {
     this.app = express();
     this.plugins();
+    this.routes();
+    this.errorHandling();
   }
 
   protected plugins(): void {
@@ -35,6 +39,14 @@ class App {
     this.app.use(compression());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
+  }
+
+  protected routes(): void {
+    this.app.use(routes);
+  }
+
+  protected errorHandling(): void {
+    this.app.use(ErrorHandler);
   }
 }
 
