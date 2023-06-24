@@ -9,6 +9,6 @@ export default class BaseValidation {
   }
 
   public static errorHandler(err: any) {
-    throw { err: err.errors, statusCode: 400 };
+    throw { message: err.errors, statusCode: 400, name: "Validation Error" };
   }
 }

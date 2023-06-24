@@ -38,7 +38,6 @@ export default class UserValidation extends BaseValidation {
         data
       );
     } catch (err) {
-      console.log(err);
       this.errorHandler(err);
     }
   }

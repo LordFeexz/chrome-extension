@@ -8,13 +8,19 @@ export default function ErrorHandler(
 ): void {
   let message: string;
   let status: number;
-  console.log(err);
 
   switch (err.name) {
     case "Data not found":
       message = err.message || err.name;
       status = 404;
       break;
+    case "Invalid Credentials":
+      message = err.name;
+      status = 401;
+      break;
+    case "Validation Error":
+      message = err.message;
+      status = 400;
     default:
       message = "Internal Server Error";
       status = 500;
