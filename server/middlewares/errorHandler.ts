@@ -15,6 +15,7 @@ export default function ErrorHandler(
       status = 404;
       break;
     case "Invalid Credentials":
+    case "Unauthorized":
       message = err.name;
       status = 401;
       break;
@@ -26,6 +27,22 @@ export default function ErrorHandler(
       message = err.message;
       status = 409;
       break;
+    case "Too many request":
+      message = err.name;
+      status = 429;
+      break;
+    case "Invalid Token":
+    case "JsonWebTokenError":
+      message = "Invalid Token";
+      status = 401;
+      break;
+    case "Bad Request":
+      message = err.name;
+      status = 400;
+      break;
+    case "Bad Gateway":
+      message = err.name;
+      status = 502;
     default:
       message = "Internal Server Error";
       status = 500;
