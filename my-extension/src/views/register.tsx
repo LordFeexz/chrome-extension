@@ -1,17 +1,18 @@
 import { useState } from "react";
-import FormSection from "../components/form";
-import { Container, Row, Col } from "react-bootstrap";
-import axios from "axios";
 import { baseUrl } from "../constant";
-import { swalError } from "../components/swal";
 import { redirect } from "react-router-dom";
+import { swalError } from "../components/swal";
+import axios from "axios";
+import { Container, Row, Col } from "react-bootstrap";
 import Loading from "../components/loading";
+import FormSection from "../components/form";
 
-export default function LoginPage(): JSX.Element {
+export default function RegisterPage(): JSX.Element {
   const [state, setState] = useState({
     email: "",
     password: "",
   });
+
   const [loading, setLoading] = useState(false);
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,14 +28,13 @@ export default function LoginPage(): JSX.Element {
       e.preventDefault();
       setLoading(true);
 
-      const { data } = await axios({
+      await axios({
         method: "POST",
-        url: `${baseUrl}/auth/login`,
+        url: `${baseUrl}/auth/register`,
         data: state,
       });
 
-      localStorage.setItem("access_token", data.access_token);
-      redirect("/");
+      redirect("/login");
     } catch (err) {
       swalError(err);
     } finally {
@@ -46,7 +46,7 @@ export default function LoginPage(): JSX.Element {
       <Container>
         <Row>
           <Col md="12" sm="12" lg="12">
-            <h1>Login page</h1>
+            <h1>Register page</h1>
           </Col>
           <Col md="12" sm="12" lg="12">
             {loading ? (
