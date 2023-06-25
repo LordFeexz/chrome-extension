@@ -1,7 +1,7 @@
 import MongoConnect from "../config/mongodb";
 import app from "..";
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 MongoConnect()
   .then(() => {
