@@ -21,6 +21,11 @@ export default function ErrorHandler(
     case "Validation Error":
       message = err.message;
       status = 400;
+      break;
+    case "Conflict":
+      message = err.message;
+      status = 409;
+      break;
     default:
       message = "Internal Server Error";
       status = 500;

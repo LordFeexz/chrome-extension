@@ -16,6 +16,10 @@ export default class Controller {
 
       const user = await UserValidation.validateUserCreate({ email, password });
 
+      const conflict = await UserService.findOne({ email });
+
+      if (conflict) throw { name: "Conflict" ,message :'Email is already use'};
+
       await UserService.createUser(user as user);
 
       res.status(201).json({ message: "success" });
