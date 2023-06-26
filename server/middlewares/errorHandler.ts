@@ -37,7 +37,7 @@ export default function ErrorHandler(
       status = 401;
       break;
     case "Bad Request":
-      message = err.name;
+      message = err.message || err.name;
       status = 400;
       break;
     case "Bad Gateway":
