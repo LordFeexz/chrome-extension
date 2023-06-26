@@ -10,8 +10,10 @@ let db: Db | null = null;
 
 export default async function MongoConnect() {
   try {
-    db = client.db("extension");
-    db.collection("users").createIndex({ email: 1 }, { unique: true });
+    client.connect().then(() => {
+      db = client.db("extension");
+      db.collection("users").createIndex({ email: 1 }, { unique: true });
+    });
   } catch (err) {
     return err;
   }
