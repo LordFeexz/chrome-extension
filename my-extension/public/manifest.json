@@ -6,11 +6,26 @@
   "browser_action": {
     "default_popup": "index.html"
   },
+  "startUrl": "/login",
+  "scope": "/",
+  "display": "standalone",
   "permissions": [
     "activeTab",
     "storage",
     "notifications",
-    "content_scripts",
-    "alarm"
-  ]
+    "scripting",
+    "alarms",
+    "background"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["contentScript.js"]
+    }
+  ],
+  "content_security_policy": "script-src 'self' https://cdn.jsdelivr.net; object-src 'self'"
 }

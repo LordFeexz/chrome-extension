@@ -1,4 +1,6 @@
 import { openDB } from "idb";
+import axios from "axios";
+const baseUrl = `http://localhost:3001`;
 
 async function getDb() {
   const db = await openDB("news", 1, {
@@ -46,3 +48,36 @@ async function saveData(data) {
   }
 }
 
+chrome.alarms.create("schedulers", {
+  when: Date.now() + 1000,
+  periodInMinutes: 1 * 60,
+});
+
+async function renewData() {
+  try {
+    const access_token = localStorage.getItem("access_token");
+    const { data } = await axios({
+      method: "GET",
+      url: `${baseUrl}/news`,
+      headers: {
+        access_token,
+      },
+    });
+
+    if (!data.articles.length) throw { message: "Data not found" };
+
+    await clearData();
+
+    await saveData(data.articles);
+
+    console.log("success");
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+  if (alarm.name === "schedulers") {
+    await renewData();
+  }
+});
