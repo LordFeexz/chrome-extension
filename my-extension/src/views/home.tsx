@@ -7,8 +7,12 @@ import { swalError } from "../components/swal";
 import Loading from "../components/loading";
 import NewsCard from "../components/newsCard";
 import { Container, Row, Col } from "react-bootstrap";
+import { props } from "../interfaces/props";
 
-export default function Home(): JSX.Element {
+export default function Home({
+  access_token,
+  redirectPage,
+}: props): JSX.Element {
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -16,14 +20,15 @@ export default function Home(): JSX.Element {
     (async () => {
       try {
         setLoading(true);
+        if (!access_token) {
+          redirectPage("/login");
+        }
         const news = await getData();
 
         if (news.length) {
           setNews(news);
           return;
         }
-
-        const access_token = localStorage.getItem("access_token");
 
         const { data } = await axios<{ totalData: number; articles: News[] }>({
           method: "GET",
@@ -44,7 +49,7 @@ export default function Home(): JSX.Element {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [access_token, redirectPage]);
   return (
     <>
       {loading ? (
@@ -54,7 +59,7 @@ export default function Home(): JSX.Element {
           <Row>
             {news.map((item, idx) => {
               return (
-                <Col md="4" sm="4" lg="4" key={idx}>
+                <Col md="2" sm="2" lg="4" key={idx}>
                   <NewsCard news={item} key={idx} />
                 </Col>
               );

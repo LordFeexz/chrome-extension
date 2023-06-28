@@ -1,9 +1,6 @@
 import { AES, enc } from "crypto-ts";
-import { config } from "dotenv";
 
-config();
-
-const ENCRYPTION_KEY: string = process.env.ENCRYPTION_KEY as string;
+const ENCRYPTION_KEY: string = process.env.REACT_APP_ENCRYPTION_KEY as string;
 
 export const encrypt = (data: string): string =>
   AES.encrypt(data, ENCRYPTION_KEY).toString();

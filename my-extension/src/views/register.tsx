@@ -1,19 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { baseUrl } from "../constant";
-import { redirect } from "react-router-dom";
 import { swalError } from "../components/swal";
 import axios from "axios";
 import { Container, Row, Col } from "react-bootstrap";
 import Loading from "../components/loading";
 import FormSection from "../components/form";
+import { props } from "../interfaces/props";
+import { encrypt } from "../helpers/encryption";
 
-export default function RegisterPage(): JSX.Element {
+export default function RegisterPage({
+  access_token,
+  redirectPage,
+}: props): JSX.Element {
   const [state, setState] = useState({
     email: "",
     password: "",
   });
 
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (access_token) redirectPage("/");
+  }, [access_token, redirectPage]);
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -31,10 +39,13 @@ export default function RegisterPage(): JSX.Element {
       await axios({
         method: "POST",
         url: `${baseUrl}/auth/register`,
-        data: state,
+        data: {
+          email: encrypt(state.email),
+          password: encrypt(state.password),
+        },
       });
 
-      redirect("/login");
+      redirectPage("/login");
     } catch (err) {
       swalError(err);
     } finally {
