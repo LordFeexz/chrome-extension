@@ -9,7 +9,7 @@ export default class Controller {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { q, country = "us", language = "en" } = req.query;
+      const { q, country = "us", language = "en" } = req.query; //getting req query and give default value if not exists
       const page = parseInt(req.query.page as string) || 1;
       const pageSize = parseInt(req.query.pageSize as string) || 10;
 
@@ -24,9 +24,9 @@ export default class Controller {
           language,
           q,
         },
-      });
+      }); //do external api request
 
-      if (!data.articles.length) throw { name: "Data not found" };
+      if (!data.articles.length) throw { name: "Data not found" }; //if data not found throw error
 
       res.status(200).json({
         totalData: data.totalResults,

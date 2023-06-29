@@ -8,7 +8,7 @@ export default function ErrorHandler(
 ): void {
   let message: string;
   let status: number;
-
+  //all errors will handle here
   switch (err.name) {
     case "Data not found":
       message = err.message || err.name;
