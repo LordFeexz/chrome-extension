@@ -71,6 +71,16 @@ export default function RegisterPage({
               />
             )}
           </Col>
+          <Col md="12" sm="12" lg="12">
+            <a
+              href="#"
+              onClick={() => {
+                redirectPage("/login");
+              }}
+            >
+              <span>have an account ?</span>Login
+            </a>
+          </Col>
         </Row>
       </Container>
     </>

@@ -22,6 +22,7 @@ export default function Home({
         setLoading(true);
         if (!access_token) {
           redirectPage("/login");
+          return;
         }
         const news = await getData();
 
