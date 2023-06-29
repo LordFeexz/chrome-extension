@@ -46,8 +46,8 @@ export default function RegisterPage({
       });
 
       redirectPage("/login");
-    } catch (err) {
-      swalError(err);
+    } catch (err:any) {
+      swalError(err.response.data.message);
     } finally {
       setLoading(false);
     }

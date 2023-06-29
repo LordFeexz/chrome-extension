@@ -52,8 +52,8 @@ export default function LoginPage({
       localStorage.setItem("access_token", data.access_token);
       sendMessage(data.access_token);
       redirectPage("/");
-    } catch (err) {
-      swalError(err);
+    } catch (err:any) {
+      swalError(err.response.data.message);
     } finally {
       setLoading(false);
     }

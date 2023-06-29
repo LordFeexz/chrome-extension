@@ -21,6 +21,7 @@ async function getDb() {
 
     request.onsuccess = (e) => {
       db = e.target.result;
+      console.log({ db });
       resolve(db);
     };
 
@@ -103,7 +104,7 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
 });
 
 chrome.alarms.create("schedulers", {
-  periodInMinutes: 1 * 60,
+  periodInMinutes: 1,
   when: Date.now() + 1000,
 });
 

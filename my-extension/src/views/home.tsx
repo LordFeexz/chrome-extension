@@ -44,8 +44,8 @@ export default function Home({
         const saveToDb = await saveData(data.articles);
 
         if (!saveToDb) throw { name: "Failed to save data" };
-      } catch (err) {
-        swalError(err);
+      } catch (err:any) {
+        swalError(err.response.data.message);
       } finally {
         setLoading(false);
       }
