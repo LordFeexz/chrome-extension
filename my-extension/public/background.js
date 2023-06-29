@@ -1,29 +1,47 @@
-import { openDB } from "idb";
-import axios from "axios";
 const baseUrl = `http://localhost:3001`;
+let access_token = "";
+
+self.addEventListener("message", (e) => {
+  const { data, type } = e.data;
+
+  if (e.data && type === "token") access_token = data;
+});
 
 async function getDb() {
-  const db = await openDB("news", 1, {
-    upgrade(db) {
-      if (!db.objectStoreNames.contains("news"))
-        db.createObjectStore("news", {
-          keyPath: "id",
-          autoIncrement: true,
-        });
-    },
-  });
+  return new Promise((resolve, reject) => {
+    let db;
+    const request = indexedDB.open("news", 1);
 
-  return db;
+    request.onupgradeneeded = (e) => {
+      db = e.target.result;
+      if (!db.objectStoreNames.contains("news")) {
+        db.createObjectStore("news", { keyPath: "id", autoIncrement: true });
+      }
+    };
+
+    request.onsuccess = (e) => {
+      db = e.target.result;
+      resolve(db);
+    };
+
+    request.onerror = (e) => {
+      reject(e.target.error);
+    };
+  });
 }
 
 async function clearData() {
-  const db = await getDb();
+  try {
+    const db = await getDb();
 
-  const tx = db.transaction("news", "readwrite");
+    const tx = db.transaction("news", "readwrite");
 
-  const store = tx.objectStore("news");
+    const store = tx.objectStore("news");
 
-  await store.clear();
+    await store.clear();
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function saveData(data) {
@@ -48,26 +66,27 @@ async function saveData(data) {
   }
 }
 
-chrome.alarms.create("schedulers", {
-  when: Date.now() + 1000,
-  periodInMinutes: 1 * 60,
-});
-
 async function renewData() {
   try {
-    const access_token = localStorage.getItem("access_token");
-    const { data } = await axios({
-      method: "GET",
-      url: `${baseUrl}/news`,
+    if (!access_token) return;
+
+    const response = await fetch(`${baseUrl}/news`, {
       headers: {
         access_token,
       },
     });
 
-    if (!data.articles.length) throw { message: "Data not found" };
+    if (!response.ok) {
+      throw new Error("Failed to fetch data");
+    }
+
+    const data = await response.json();
+
+    if (!data.articles.length) {
+      throw new Error("Data not found");
+    }
 
     await clearData();
-
     await saveData(data.articles);
 
     console.log("success");
@@ -75,6 +94,18 @@ async function renewData() {
     console.log(err);
   }
 }
+
+chrome.runtime.onInstalled.addListener(({ reason }) => {
+  if (reason !== chrome.runtime.OnInstalledReason.INSTALL) {
+    return;
+  }
+  console.log("running");
+});
+
+chrome.alarms.create("schedulers", {
+  periodInMinutes: 1 * 60,
+  when: Date.now() + 1000,
+});
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === "schedulers") {

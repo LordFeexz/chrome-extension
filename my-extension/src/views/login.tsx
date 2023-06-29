@@ -30,6 +30,11 @@ export default function LoginPage({
     }));
   };
 
+  const sendMessage = (data: string) => {
+    if ("serviceWorker" in navigator)
+      navigator.serviceWorker.controller?.postMessage({ type: "token", data });
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
@@ -45,9 +50,9 @@ export default function LoginPage({
       });
 
       localStorage.setItem("access_token", data.access_token);
+      sendMessage(data.access_token);
       redirectPage("/");
     } catch (err) {
-      console.log(err);
       swalError(err);
     } finally {
       setLoading(false);
