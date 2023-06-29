@@ -1,18 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FormSection from "../components/form";
 import { Container, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { baseUrl } from "../constant";
 import { swalError } from "../components/swal";
-import { redirect } from "react-router-dom";
 import Loading from "../components/loading";
+import { props } from "../interfaces/props";
+import { encrypt } from "../helpers/encryption";
 
-export default function LoginPage(): JSX.Element {
+export default function LoginPage({
+  access_token,
+  redirectPage,
+}: props): JSX.Element {
   const [state, setState] = useState({
     email: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (access_token) redirectPage("/");
+  }, [access_token, redirectPage]);
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -20,6 +28,11 @@ export default function LoginPage(): JSX.Element {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const sendMessage = (data: string) => {
+    if ("serviceWorker" in navigator)
+      navigator.serviceWorker.controller?.postMessage({ type: "token", data });
   };
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -30,13 +43,17 @@ export default function LoginPage(): JSX.Element {
       const { data } = await axios({
         method: "POST",
         url: `${baseUrl}/auth/login`,
-        data: state,
+        data: {
+          email: encrypt(state.email),
+          password: encrypt(state.password),
+        },
       });
 
       localStorage.setItem("access_token", data.access_token);
-      redirect("/");
-    } catch (err) {
-      swalError(err);
+      sendMessage(data.access_token);
+      redirectPage("/");
+    } catch (err:any) {
+      swalError(err.response.data.message);
     } finally {
       setLoading(false);
     }
@@ -59,6 +76,16 @@ export default function LoginPage(): JSX.Element {
                 onChangeHandler={onChangeHandler}
               />
             )}
+          </Col>
+          <Col md="12" sm="12" lg="12">
+            <a
+              href="#"
+              onClick={() => {
+                redirectPage("/register");
+              }}
+            >
+              <span>Dont have account ?</span>Register
+            </a>
           </Col>
         </Row>
       </Container>

@@ -1,10 +1,18 @@
+import DecryptBody from "../middlewares/verifyBody";
+import VerifyQuery from "../middlewares/verifyQuery";
 import authRoutes from "./auth";
 import BaseRoutes from "./base";
 import NewsRoutes from "./news";
 
 class Routes extends BaseRoutes {
   routes(): void {
-    this.router.use("/auth", authRoutes).use("/news", NewsRoutes);
+    this.router
+      //verifying req.query
+      .use(VerifyQuery)
+      //decrypting req.body and verifying
+      .use(DecryptBody)
+      .use("/auth", authRoutes)
+      .use("/news", NewsRoutes);
   }
 }
 

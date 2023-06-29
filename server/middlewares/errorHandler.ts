@@ -8,7 +8,7 @@ export default function ErrorHandler(
 ): void {
   let message: string;
   let status: number;
-
+  //all errors will handle here
   switch (err.name) {
     case "Data not found":
       message = err.message || err.name;
@@ -37,7 +37,7 @@ export default function ErrorHandler(
       status = 401;
       break;
     case "Bad Request":
-      message = err.name;
+      message = err.message || err.name;
       status = 400;
       break;
     case "Bad Gateway":
